@@ -1,17 +1,29 @@
 # Work Log config
 
-Cached identifiers for the `work-log` skill. The skill reads this first to avoid
-re-discovering the Notion database on every run.
+Cached identifiers for the `work-log` skill so it never has to re-discover the
+Notion database.
 
-## database_id
+## Notion
 
-<!-- Not set yet. On first successful discovery/creation, replace the line below
-with the real Notion database ID, then commit & push so scheduled sessions
-inherit it. -->
+- **Database:** `Work Log`
+- **database_id:** `03627364862c4441baaecc0c5239b262`
+- **data source (for queries):** `collection://64032fd2-f607-4045-b1ed-38defd2c1746`
 
-database_id: (unset)
+Create entries with `notion-create-pages` using
+`parent = {"data_source_id": "64032fd2-f607-4045-b1ed-38defd2c1746"}`.
+Query with `notion-query-data-sources` against
+`collection://64032fd2-f607-4045-b1ed-38defd2c1746`.
 
-## Notes
+## Schema (exact select options matter)
 
-- After setting `database_id`, run:
-  `git add .claude/skills/work-log/references/config.md && git commit -m "chore(work-log): cache Notion database id" && git push`
+`Category` must be exactly one of:
+`Project`, `Meeting`, `Support`, `Admin`, `Learning`, `Decision`, `Blocker`, `Other`.
+Unknown values are rejected by the API.
+
+`Meeting` checkbox: `"__YES__"` / `"__NO__"`.
+`Captured` is an automatic created-time — do not set it.
+
+## If the IDs ever break
+
+If a call reports the database/data source is missing (e.g. it was moved or
+recreated), run `notion-search` for `Work Log`, then update the IDs above.
